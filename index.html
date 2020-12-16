@@ -6,77 +6,32 @@
     <title>Document</title>    
 
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/1.0.22/webcomponents-sd-ce.js"></script>-->
-    
-    <script id='shadycss__polyfill'>
-        /// ShadowCSS polyfill
-        if (!this.attachShadow){
-            window.addEventListener('DOMContentLoaded', function() {
 
-                let style = document.createElement('style');                
-                style.type  = 'text/css'; 
-                document.head.appendChild(style);
+    <!--[if lte IE 8]>
+        <script src="legacy__ce_sd__support/addeventlistener__polyfill.js"></script>        
+        <script>
+            window.loadEvent = 'load';
+            document.head = document.querySelector('head');
+        </script>
+    <![endif]-->    
 
-                [].slice.apply(document.querySelectorAll('template')).forEach(function(template) {
-                    
-                    let res = template.innerHTML.replace(/<style>([\s\S]*?)<\/style>/, function(r ,group) {
-                                                       
-                        let cssReplaced = group.replace(/(\n\s*)([\.#\w\s]*){/g, function(_, offset, cls) {
-                            
-                            return offset + '.' +  template.id + ' ' + cls + '{';               // return `${offset}.${template.id} ${cls}{`
-                        });
-                        let specCssRepl = cssReplaced.replace(/\:host/g, '.' + template.id);    // `.${template.id}`
-                        return specCssRepl;
-                    });  
+    <script>
+        window.addEventListener('load', function(){
+            
+            var SliderComponent = document.getElementById('slider');                                    
+            customElements.define("slider-carousel", SliderComponent);
+        })
+    </script>         
 
-                    if (style.styleSheet) style.styleSheet.cssText = res;       // ie
-                    else style.appendChild(document.createTextNode(res));       // *
-                });
-            });
-        }
-    </script>    
-
-    <script id='es5__ce__polyfill'>
-
-        if (!Array.from){
-
-            window.addEventListener('DOMContentLoaded', function() {
-                
-                customElements = customElements || {};
-                customElements.define = function(componentName, template){
-                    
-                    let sample = template.cloneNode(true);
-                    sample.style.display = 'block';
-                    [].slice.apply(document.querySelectorAll(componentName)).forEach(function(elem){
-                        
-                        let slot = elem.innerHTML; 
-                        elem.innerHTML = slot 
-                            ? sample.innerHTML.replace(/<slot>[\s\S]*?<\/slot>/, slot)        // вставляем slot
-                            : sample.innerHTML;
-                    });                            
-                }                
-                    
-            });
-
-            window.addEventListener('load', function(){
-                
-                let SliderComponent = document.getElementById('slider');                                    
-                customElements.define("slider-carousel", SliderComponent);
-            })
-
-        }
-    </script>        
-    
     <script id='customelem_polyfill' src="polyfills/packages/custom-elements/build/custom-elements.min.js"></script>
     <script src="polyfills/packages/shadydom/build/shadydom.min.js"></script>           
-
     
-    <style>
-        template{
-            display: none;
-        }
-    </style>
+    <script id='shadowcss_polyfill' src="legacy__ce_sd__support/shadowcss__polyfill.js"></script>
+    <script id='es5__ce__polyfill' src="legacy__ce_sd__support/es5__ce__polyfill.js"></script>  <style>template{display: none;}</style>    
+
 </head>
 <body style="background-color: #666;">
+    
     
     <template id='slider'>   
                       
@@ -107,8 +62,6 @@
                 super();
                                 
                 let dom = document.getElementById('slider').content.cloneNode(true);
-
-                // ShadyCSS.prepareTemplate( slider, 'div' )
 
                 // this.attachShadow({ mode: "open" }).appendChild(dom);   
                 this.attachShadow({ mode: "open" });                   
