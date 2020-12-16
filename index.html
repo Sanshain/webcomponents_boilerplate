@@ -12,7 +12,9 @@
             if (!!window.Reflect) return;
 
             window.Reflect = {
-                construct: function (target, args, newTarget) {
+                construct: function (target, args, newTarget) 
+                {
+                    
                     var handler = (new WeakMap()).get(target);
                     if (handler !== undefined) return handler.construct(handler.target, args, newTarget);
 
@@ -48,6 +50,7 @@
 
     
     <script>
+        /// ShadowCSS polyfill
         if (!this.attachShadow){
             window.addEventListener('DOMContentLoaded', function() {
 
@@ -70,9 +73,40 @@
                     if (style.styleSheet) style.styleSheet.cssText = res;       // ie
                     else style.appendChild(document.createTextNode(res));       // *
                 });
-            })
+            });
         }
-    </script>
+    </script>    
+
+    <script>
+
+        if (!Array.from){
+
+            window.addEventListener('DOMContentLoaded', function() {
+                
+                customElements = customElements || {};
+                customElements.define = function(componentName, template){
+                    
+                    let sample = template.cloneNode(true);
+                    sample.style.display = 'block';
+                    [].slice.apply(document.querySelectorAll(componentName)).forEach(function(elem){
+                        
+                        let slot = elem.innerHTML; 
+                        elem.innerHTML = slot 
+                            ? sample.innerHTML.replace(/<slot>[\s\S]*?<\/slot>/, slot)        // вставляем slot
+                            : sample.innerHTML;
+                    });                            
+                }                
+                    
+            });
+
+            window.addEventListener('load', function(){
+                
+                let SliderComponent = document.getElementById('slider');                                    
+                customElements.define("slider-carousel", SliderComponent);
+            })
+
+        }
+    </script>        
     
     <script id='customelem_polyfill' src="polyfills/packages/custom-elements/build/custom-elements.min.js"></script>
     <script src="polyfills/packages/shadydom/build/shadydom.min.js"></script>           
@@ -86,10 +120,14 @@
 
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/2.3.0/webcomponents-bundle.js"></script> -->
 
-    
+    <style>
+        template{
+            display: none;
+        }
+    </style>
 </head>
 <body style="background-color: #666;">
-
+    
     <template id='slider'>   
                       
         <style>
@@ -105,88 +143,40 @@
         <span>sliding: </span><slot></slot>.     
         <div class="inside">456</div>
     </template>    
-    <script>
 
-        if (!Array.from){
-
-            let customElements = {
-                define: function(componentName, template){
-
-                    [].slice.apply(document.querySelectorAll(componentName)).forEach(function(elem){
-
-                        let slot = elem.innerHTML;                        
-                        if (slot){
-                            template.innerHTML = template.innerHTML.replace(/<slot>[\s\S]*?<\/slot>/, slot)
-                        }
-                        elem.appendChild(template);
-                    });
-
-                    // template.parentElement.removeChild(template);
-                }
-            }
-
-            let SliderComponent = document.getElementById('slider').cloneNode(true);
-            customElements.define("slider-carousel", SliderComponent);
-        }
-        else{
-
-            // вынести в отдельный скрипт ?
-
-
-            // function SliderComponent(){
-            //     HTMLElement.apply(this);
-            //     SliderComponent.prototype = HTMLElement;
-            //     HTMLElement.constructor.apply(this);
-            //     let self = this;
-
-            //     let dom = document.getElementById('slider').content.cloneNode(true);
-
-            //     // ShadyCSS.prepareTemplate( slider, 'div' )
-
-            //     // this.attachShadow({ mode: "open" }).appendChild(dom);   
-            //     self.attachShadow({ mode: "open" });                   
-            //     // this.shadowRoot.innerHTML = `
-            //     //     <style>
-            //     //         :host {
-            //     //             display: block;
-            //     //             color: green;
-            //     //         }
-            //     //     </style>               
-            //     //     <span>sliding1: </span><slot></slot>.   <hr> 
-            //     // `
-            //     self.shadowRoot.appendChild(dom);                
-            // }
-
-            // class SliderComponent extends HTMLElement {
-            //     constructor() {
-            //         super();
-                                    
-            //         let dom = document.getElementById('slider').content.cloneNode(true);
-
-            //         // ShadyCSS.prepareTemplate( slider, 'div' )
-
-            //         // this.attachShadow({ mode: "open" }).appendChild(dom);   
-            //         this.attachShadow({ mode: "open" });                   
-            //         // this.shadowRoot.innerHTML = `
-            //         //     <style>
-            //         //         :host {
-            //         //             display: block;
-            //         //             color: green;
-            //         //         }
-            //         //     </style>               
-            //         //     <span>sliding1: </span><slot></slot>.   <hr> 
-            //         // `
-            //         this.shadowRoot.appendChild(dom);
-            //     }
-            // }
-
-            customElements.define("slider-carousel", SliderComponent);
-        }
-   
-
-    </script>
     <slider-carousel class='slider'>--</slider-carousel>
     <span>123</span>    
     
+
+    
+    <script>
+        // вынести в отдельный скрипт ?
+
+        class SliderComponent extends HTMLElement {
+            constructor() {
+                super();
+                                
+                let dom = document.getElementById('slider').content.cloneNode(true);
+
+                // ShadyCSS.prepareTemplate( slider, 'div' )
+
+                // this.attachShadow({ mode: "open" }).appendChild(dom);   
+                this.attachShadow({ mode: "open" });                   
+                // this.shadowRoot.innerHTML = `
+                //     <style>
+                //         :host {
+                //             display: block;
+                //             color: green;
+                //         }
+                //     </style>               
+                //     <span>sliding1: </span><slot></slot>.   <hr> 
+                // `
+                this.shadowRoot.appendChild(dom);
+            }
+        }
+
+        customElements.define("slider-carousel", SliderComponent);        
+    </script>
+
 </body>
 </html>
