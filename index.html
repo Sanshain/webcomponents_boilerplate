@@ -3,128 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>    
+    <title>Document</title>        
 
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/1.0.22/webcomponents-sd-ce.js"></script> -->
-
-    <script>
-        if (!window.customElements){            
-                        
-            if (Array.from) window.loadEvent = 'load';  // window.scripts = [];
-
-            (function(){
-                
-                var scripts = [
-                    "polyfills/packages/custom-elements/build/custom-elements.old.js",   
-                    "polyfills/packages/shadydom/build/shadydom.min.js",                                       
-                    "legacy__ce_sd__support/shadowcss__polyfill.js",
-                    "legacy__ce_sd__support/es5__ce__polyfill.js"            
-                ];
-                
-                scripts.forEach(function (src, i) {
-                    
-                    var script = document.createElement('script');
-                    script.src = src;                                        
-                    script.type = "text/javascript";
-                    document.head.appendChild(script);
-
-                    // script.id = 'script' + i;    
-                    // script.addEventListener('load', () => console.log(script.id));
-                    // scripts.push(script);
-                });
-            })();
-        }     
-        
-        // window.addEventListener('DOMContentLoaded', () => console.warn(customElements))
-        // window.addEventListener('load', () => console.info(customElements))                
-    </script>    
-
-
-    <style>
-        @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
-            template{ display: none; }
-        }
-    </style>
-
-
-    <!-- <script src="polyfills/packages/shadydom/build/shadydom.min.js"></script>  
-    <script id='customelem_polyfill' src="polyfills/packages/custom-elements/build/custom-elements.min.js"></script>                 -->
-    
-    <!-- <script id='shadowcss_polyfill' src="legacy__ce_sd__support/shadowcss__polyfill.js"></script> -->
-    <!-- <script id='es5__ce__polyfill' src="legacy__ce_sd__support/es5__ce__polyfill.js"></script>   -->
-
-    <!--[if IE]>
-        <script>alert(0)</script>
-        <script id='es5__ce__polyfill' src="legacy__ce_sd__support/es5__ce__polyfill.js"></script>  <style>template{display: none;}</style>
-    <![endif]-->
+    <script src="legacy__ce_sd__support/dyncmic__initialize.js"></script>   
+    <style>@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {template{ display: none; }}</style>
 
 </head>
-<body style="background-color: #666;">
+<body">
+        
+
+
+
+
+    <slider-carousel class='slider'>--</slider-carousel>
+    <span>123</span>        
     
     
     <template id='slider'>   
                       
         <style>
             /* :host { */
+            .p{}
             :host{
                 display: block;
                 color: beige;
-            }
-            .p{
-                
-            }
+            }            
         </style>               
         <span>sliding: </span><slot></slot>.     
         <div class="inside">456</div>
     </template>    
-
-    <slider-carousel class='slider'>--</slider-carousel>
-    <span>123</span>    
     
+    <script id='webcomponents'>
+
+        window.addEventListener('load', () => {                    
+
+            class SliderComponent extends HTMLElement {
+                constructor() {
+                    super();
+                                    
+                    let dom = document.getElementById('slider').content.cloneNode(true);                    
+                    // this.attachShadow({ mode: "open" }).appendChild(dom);   
+                    this.attachShadow({ mode: "open" });                   
+                    this.shadowRoot.appendChild(dom);
+                }
+            }
+
+            customElements.define("slider-carousel", SliderComponent);            
+        })
+    </script>
+
+
+
+
+
+
+
+
+
 
     <script id='ie__components'>
         if (!Array.from){
             
             window.addEventListener('load', function(){                            
 
-                var SliderComponent = document.getElementById('slider');                                    
+                var SliderComponent = document.getElementById('slider'); 
+
                 customElements.define("slider-carousel", SliderComponent);
             })
         }
-    </script>
-    
-    <script id='webcomponents'>
+    </script>    
 
-        window.addEventListener('load', () => {
-            
-            // вынести в отдельный скрипт ?
+    <script>
+        // global ie:
+        customElements.initializeIE = function(elem){
 
-            class SliderComponent extends HTMLElement {
-                constructor() {
-                    super();
-                                    
-                    let dom = document.getElementById('slider').content.cloneNode(true);
-                    
-                    // this.attachShadow({ mode: "open" }).appendChild(dom);   
-                    this.attachShadow({ mode: "open" });                   
-                    // this.shadowRoot.innerHTML = `
-                    //     <style>
-                    //         :host {
-                    //             display: block;
-                    //             color: green;
-                    //         }
-                    //     </style>               
-                    //     <span>sliding1: </span><slot></slot>.   <hr> 
-                    // `
-                    this.shadowRoot.appendChild(dom);
+            if (!Array.from){            
+                window.addEventListener('load', function(){                            
+                    var SliderComponent = document.getElementById(elem.id); 
+                    customElements.define(elem.name, SliderComponent);
+                })
+            }            
+        }
+        // global all:
+        customElements.initialize = function(elem){
+
+            window.addEventListener('load', function(){    
+                class SliderComponent extends HTMLElement {
+                    constructor() {
+                        super();                                    
+                        let dom = document.getElementById(elem.id).content.cloneNode(true);                                        
+                        this.attachShadow({ mode: "open" });                   
+                        this.shadowRoot.appendChild(dom);
+                    }
                 }
-            }
 
-            customElements.define("slider-carousel", SliderComponent);    
-            
-            // console.log('winload');
-        })
+                customElements.define(elem.name, SliderComponent); 
+            });
+       
+        }
+        // inside unit:
+        // customElements.initialize({
+        //     id: 'slider',
+        //     name: 'slider_carousel'
+        // })
+
+        // в перспективе для джанги сделать так через initialize. Но пока тренивароться так
     </script>
 
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/1.0.22/webcomponents-sd-ce.js"></script> -->
 </body>
 </html>
