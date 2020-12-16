@@ -2,6 +2,8 @@ if (!Array.from){
 
     window.addEventListener(window.loadEvent || 'DOMContentLoaded', function() {
         
+        console.log('customElements_def')
+
         window.customElements = window.customElements || {};
         customElements.define = function(componentName, template){
             

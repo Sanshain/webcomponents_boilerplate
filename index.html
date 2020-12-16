@@ -10,14 +10,15 @@
     <script>
         if (!window.customElements){            
                         
-            window.loadEvent = 'load';  // window.scripts = [];
+            if (Array.from) window.loadEvent = 'load';  // window.scripts = [];
 
             (function(){
                 
                 var scripts = [
                     "polyfills/packages/custom-elements/build/custom-elements.old.js",   
                     "polyfills/packages/shadydom/build/shadydom.min.js",                                       
-                    "legacy__ce_sd__support/shadowcss__polyfill.js"               
+                    "legacy__ce_sd__support/shadowcss__polyfill.js",
+                    "legacy__ce_sd__support/es5__ce__polyfill.js"            
                 ];
                 
                 scripts.forEach(function (src, i) {
@@ -38,22 +39,22 @@
         // window.addEventListener('load', () => console.info(customElements))                
     </script>    
 
-    <script>
-        if (!Array.from){
-            
-            window.addEventListener('load', function(){
-                
-                var SliderComponent = document.getElementById('slider');                                    
-                customElements.define("slider-carousel", SliderComponent);
-            })
+
+    <style>
+        @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+            template{ display: none; }
         }
-    </script>     
+    </style>
+
 
     <!-- <script src="polyfills/packages/shadydom/build/shadydom.min.js"></script>  
     <script id='customelem_polyfill' src="polyfills/packages/custom-elements/build/custom-elements.min.js"></script>                 -->
     
     <!-- <script id='shadowcss_polyfill' src="legacy__ce_sd__support/shadowcss__polyfill.js"></script> -->
+    <!-- <script id='es5__ce__polyfill' src="legacy__ce_sd__support/es5__ce__polyfill.js"></script>   -->
+
     <!--[if IE]>
+        <script>alert(0)</script>
         <script id='es5__ce__polyfill' src="legacy__ce_sd__support/es5__ce__polyfill.js"></script>  <style>template{display: none;}</style>
     <![endif]-->
 
@@ -81,8 +82,18 @@
     <span>123</span>    
     
 
+    <script id='ie__components'>
+        if (!Array.from){
+            
+            window.addEventListener('load', function(){                            
+
+                var SliderComponent = document.getElementById('slider');                                    
+                customElements.define("slider-carousel", SliderComponent);
+            })
+        }
+    </script>
     
-    <script>
+    <script id='webcomponents'>
 
         window.addEventListener('load', () => {
             
@@ -93,7 +104,6 @@
                     super();
                                     
                     let dom = document.getElementById('slider').content.cloneNode(true);
-
                     
                     // this.attachShadow({ mode: "open" }).appendChild(dom);   
                     this.attachShadow({ mode: "open" });                   
