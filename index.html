@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>        
 
-    <script src="legacy__ce_sd__support/dyncmic__initialize.js"></script>   
+    <script id='rrr' src="legacy__ce_sd__support/dyncmic__initialize.js"></script>   
     <style>@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {template{ display: none; }}</style>
 
 </head>
@@ -33,7 +33,7 @@
         <div class="inside">456</div>
     </template>    
     
-    <script id='webcomponents'>
+    <!-- <script id='webcomponents'>
 
         window.addEventListener('load', () => {                    
 
@@ -50,7 +50,7 @@
 
             customElements.define("slider-carousel", SliderComponent);            
         })
-    </script>
+    </script> -->
 
 
 
@@ -69,6 +69,8 @@
                 var SliderComponent = document.getElementById('slider'); 
 
                 customElements.define("slider-carousel", SliderComponent);
+
+					 console.log('ie detected')
             })
         }
     </script>    
@@ -87,25 +89,32 @@
         // global all:
         customElements.initialize = function(elem){
 
-            window.addEventListener('load', function(){    
-                class SliderComponent extends HTMLElement {
-                    constructor() {
-                        super();                                    
-                        let dom = document.getElementById(elem.id).content.cloneNode(true);                                        
-                        this.attachShadow({ mode: "open" });                   
-                        this.shadowRoot.appendChild(dom);
-                    }
-                }
+				if (!Array.from) return;
 
-                customElements.define(elem.name, SliderComponent); 
+				// текст надо брать из файла жс (получать через фетч с сервера, видимо)
+				SliderComponent = eval(`					
+					class SliderComponent extends HTMLElement {
+						constructor() {
+								super();                                    
+								let dom = document.getElementById(elem.id).content.cloneNode(true);                                        
+								this.attachShadow({ mode: "open" });                   
+								this.shadowRoot.appendChild(dom);
+						}
+					}
+					SliderComponent
+				`)
+            window.addEventListener('load', function(){    
+				 
+					customElements.define(elem.name, SliderComponent);
             });
        
         }
-        // inside unit:
-        // customElements.initialize({
-        //     id: 'slider',
-        //     name: 'slider_carousel'
-        // })
+
+      	//   inside unit:
+      //   customElements.initialize({
+      //       id: 'slider',
+      //       name: 'slider-carousel'	// 'slider_carousel'
+      //   })
 
         // в перспективе для джанги сделать так через initialize. Но пока тренивароться так
     </script>
